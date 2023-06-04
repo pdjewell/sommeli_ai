@@ -95,8 +95,8 @@ if __name__ == "__main__":
     df = read_data(ds_path=ds_path)
 
     with col2:
-        st.header("Explore the world of wine")
-        wine_plot = st.radio('', ['2D','3D'],
+        st.header("Explore the world of wine  🌍")
+        wine_plot = st.radio('Select plot type:', ['2D','3D'],
                             label_visibility = "hidden",
                             horizontal=True)
         st.text("Click the legend categories to filter")
@@ -116,7 +116,7 @@ if __name__ == "__main__":
     with col1: 
 
         # Select all wine types initially
-        st.header("Search for similar wines")
+        st.header("Search for similar wines  🥂")
         wine_types = df['Type'].unique()
         selected_wine_types = st.multiselect("Select category 👇", wine_types, default=wine_types)
         df = df[df['Type'].isin(selected_wine_types)]
