@@ -52,22 +52,21 @@ def get_neighbours(df, query_embedding, k=6):
     return scores, samples
 
 
-def filter_dataframe(df: pd.DataFrame, search=True) -> pd.DataFrame:
+def filter_df_search(df: pd.DataFrame) -> pd.DataFrame:
     
-    if search:
-        modify = st.checkbox("🔍 Further filter search selection")
-    else:
-        modify = st.checkbox("🔍 Filter recommendation results")
+    modify_search = st.checkbox("🔍 Further filter search selection")
     
-    if not modify:
+    if not modify_search:
         return df
 
     df = df.copy()
 
-    modification_container = st.container()
+    modification_container_search = st.container()
 
-    with modification_container:
-        to_filter_columns = st.multiselect("Filter on:", ['Country', 'Score', 'Price', 'Province', 'Region', 'Variety', 'Winery'])
+    with modification_container_search:
+        to_filter_columns = st.multiselect("Filter on:", 
+                                           ['Country', 'Score', 'Price', 'Province', 'Region', 'Variety', 'Winery'],
+                                           key='search')
 
         for column in to_filter_columns:
             if column in ['Score', 'Price']: # Use slider for 'points' and 'price'
@@ -84,6 +83,36 @@ def filter_dataframe(df: pd.DataFrame, search=True) -> pd.DataFrame:
     return df
 
 
+def filter_df_recs(df: pd.DataFrame) -> pd.DataFrame:
+    
+    modify_recs = st.checkbox("🔍 Filter recommendation results")
+    
+    if not modify_recs:
+        return df
+
+    df = df.copy()
+
+    modification_container_recs = st.container()
+
+    with modification_container_recs:
+
+        to_filter_columns2 = st.multiselect("Filter on:", 
+                                            ['Country', 'Score', 'Price', 'Province', 'Region', 'Variety', 'Winery'],
+                                            key='recs')
+
+        for column in to_filter_columns2:
+            if column in ['Score', 'Price']: # Use slider for 'points' and 'price'
+                min_val = 0
+                max_val = int(df[column].max())
+                user_input = st.slider(f"Values for {column}", min_val, max_val, (min_val, max_val))
+                df = df[(df[column] >= user_input[0]) & (df[column] <= user_input[1])]
+            elif column in ['Country', 'Province', 'Region', 'Variety', 'Winery']: # Use multiselect for these columns
+                unique_values = df[column].dropna().unique()
+                default_values = [unique_values[0]] if len(unique_values) > 0 else [] # Select only the first unique value if it exists
+                user_input = st.multiselect(f"Values for {column}", unique_values, default_values)
+                df = df[df[column].isin(user_input)]
+
+    return df
 
 
 if __name__ == "__main__":
@@ -122,23 +151,24 @@ if __name__ == "__main__":
         df = df[df['Type'].isin(selected_wine_types)]
 
         # Add additional filters 
-        df_search = filter_dataframe(df)
+        df_search = filter_df_search(df)
 
         # Create a search bar for the wine 'title'
         selected_wine = st.selectbox("Search for and select a wine 👇", [''] + list(df_search["Title"].unique()))
-        
-        try:
-            tasting_notes = df.loc[df['Title']==selected_wine, 'Tasting notes'].iloc[0]
-            st.write(f"Tasting notes: {tasting_notes}")
-
-            # Filter recommendation results 
-            df_results = filter_dataframe(df, search=False)
-
+  
+        if selected_wine:
             # Get the embedding for selected_wine
             query_embedding = df.loc[df['Title']==selected_wine, 'embeddings'].iloc[0]
 
-            # Get neighbours
+            tasting_notes = df.loc[df['Title']==selected_wine, 'Tasting notes'].iloc[0]
+            st.write(f"Tasting notes: {tasting_notes}")
+
             k = st.slider(f"Choose how many similar wines to show 👇", 1, 10, value=4)
+
+            # Filter recommendation results 
+            df_results = filter_df_recs(df)
+
+            # Get neighbours
             scores, samples = get_neighbours(df_results, query_embedding, k=k+1)
             recs_df = pd.DataFrame(samples)
             recs_df = recs_df.fillna(" ")
@@ -160,8 +190,9 @@ if __name__ == "__main__":
             st.table(df.loc[df['Title']==selected_wine, selected_cols])
 
             # Display results as table 
-            st.header(f"🍾 Top {k} similar tasting wines")
-            st.table(recs_df.loc[1:,selected_cols])
+            if st.button("🔘 Press me to generate similar tasting wines"):
+                st.header(f"🍾 Top {k} similar tasting wines")
+                st.table(recs_df.loc[1:,selected_cols])
             
-        except:
+        else:
             print("Awaiting selection")
