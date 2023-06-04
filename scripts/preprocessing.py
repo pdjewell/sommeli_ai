@@ -2,8 +2,6 @@ import numpy as np
 import pandas as pd 
 import os
 from pathlib import Path
-import torch
-import torch.nn.functional as F
 from datasets import Dataset, load_dataset, load_from_disk
 
 def preprocess(df):
