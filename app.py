@@ -88,13 +88,13 @@ def filter_dataframe(df: pd.DataFrame, search=True) -> pd.DataFrame:
 
 if __name__ == "__main__":
     st.title("🍇 Sommeli-AI")
-    col1, col2 = st.columns(2)
-
+    col1, col2 = st.columns([0.6,0.4], gap="medium")
+ 
     # Read in data 
     ds_path = "./data/wine_ds.hf"
     df = read_data(ds_path=ds_path)
 
-    with col1:
+    with col2:
         st.header("Explore the world of wine")
         wine_plot = st.radio('', ['2D','3D'],
                             label_visibility = "hidden",
@@ -113,7 +113,7 @@ if __name__ == "__main__":
         elif wine_plot == '3D': 
             components.v1.html(plot3d_html, width=512, height=512)
 
-    with col2: 
+    with col1: 
 
         # Select all wine types initially
         st.header("Search for similar wines")
