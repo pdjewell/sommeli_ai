@@ -1,0 +1,13 @@
+{
+  "_data_files": [
+    {
+      "filename": "data-00000-of-00001.arrow"
+    }
+  ],
+  "_fingerprint": "3ba8bc3ca3959b82",
+  "_format_columns": null,
+  "_format_kwargs": {},
+  "_format_type": "numpy",
+  "_output_all_columns": false,
+  "_split": "train"
+}
