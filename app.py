@@ -5,6 +5,7 @@ from PIL import Image
 import streamlit as st 
 from streamlit import components
 from datasets import Dataset, load_dataset, load_from_disk
+import faiss
 from scripts.preprocessing import preprocess
 
 # App config 
@@ -37,12 +38,22 @@ def read_data(ds_path="./data/wine_ds.hf"):
     return df 
 
 
-def get_neighbours(df, query_embedding, k=6):
+def get_neighbours(df, query_embedding, k=6,
+                   metric='inner'):
+
+    # convert from pandas df to hf ds 
     ds = Dataset.from_pandas(df)
     ds.reset_format()
     ds = ds.with_format("np")
-    ds.add_faiss_index(column="embeddings")
 
+    # add faiss index
+    if metric == 'inner':
+        ds.add_faiss_index(column="embeddings",
+                       metric_type=faiss.METRIC_INNER_PRODUCT)
+    else: 
+        ds.add_faiss_index(column="embeddings",
+                       metric_type=faiss.METRIC_L2)
+        
     scores, samples = ds.get_nearest_examples(
         "embeddings", query_embedding, k=k)
     
@@ -163,17 +174,8 @@ if __name__ == "__main__":
             tasting_notes = df.loc[df['Title']==selected_wine, 'Tasting notes'].iloc[0]
             st.write(f"Tasting notes: {tasting_notes}")
 
-            k = st.slider(f"Choose how many similar wines to show 👇", 1, 10, value=4)
-
             # Filter recommendation results 
             df_results = filter_df_recs(df)
-
-            # Get neighbours
-            scores, samples = get_neighbours(df_results, query_embedding, k=k+1)
-            recs_df = pd.DataFrame(samples)
-            recs_df = recs_df.fillna(" ")
-            selected_cols = ['Title','Country','Province','Region','Winery',
-                            'Variety','Tasting notes','Score']
             
             # CSS to inject contained in a string
             hide_table_row_index = """
@@ -187,10 +189,21 @@ if __name__ == "__main__":
 
             # Display selected wine
             st.header("	🍷 Your selected wine")
+            selected_cols = ['Title','Country','Province','Region','Winery',
+                            'Variety','Tasting notes','Score']
             st.table(df.loc[df['Title']==selected_wine, selected_cols])
 
+            # Slider for results to show 
+            k = st.slider(f"Choose how many similar wines to show 👇", 1, 10, value=4)
+            
             # Display results as table 
             if st.button("🔘 Press me to generate similar tasting wines"):
+                # Get neighbours
+                scores, samples = get_neighbours(df_results, query_embedding, 
+                                                 k=k+1, metric='l2')
+                recs_df = pd.DataFrame(samples)
+                recs_df = recs_df.fillna(" ")
+                # Display results
                 st.header(f"🍾 Top {k} similar tasting wines")
                 st.table(recs_df.loc[1:,selected_cols])
             

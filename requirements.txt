@@ -1,9 +1,5 @@
-cachetools==5.3.1
 datasets==2.12.0
 faiss-cpu==1.7.4
-fastjsonschema==2.17.1
-jsonschema==4.17.3
-markdown-it-py==2.2.0
 numpy==1.24.3
 pandas==2.0.2
 Pillow==9.5.0
