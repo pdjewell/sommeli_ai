@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd 
 import os
 from pathlib import Path
-from datasets import Dataset, load_dataset, load_from_disk
 
 def preprocess(df):
     
@@ -62,7 +61,8 @@ def preprocess(df):
             'Roditis', 'Papaskarasi', 'Zibibbo', 'Malagousia', 'Rotgipfler', 'Durella', 'Cercial', 'Johannisberg Riesling', 
             'Teran', 'Mantonico', 'Timorasso', 'Zlahtina', 'Shiraz-Roussanne', 'Tămâioasă Românească', 'Ansonica', 'Feteasca',
             'Catalanesca', 'Moscato di Noto', 'Moscato Giallo','Sauvignon Blanc-Chardonnay', 'Sauvignon-Sémillon', "Cesanese d'Affile", 
-            'Sauvignon Blanc-Verdejo', 'Chardonnay-Riesling', 'Sauvignon Blanc-Assyrtiko','Zelen', 'Tempranillo Blanco', 'Roter Traminer'
+            'Sauvignon Blanc-Verdejo', 'Chardonnay-Riesling', 'Sauvignon Blanc-Assyrtiko','Zelen', 'Tempranillo Blanco', 
+            'Roter Traminer','Picpoul'
     ]
     Red = ['Portuguese Red', 'Pinot Noir', 'Tempranillo-Merlot', 'Frappato', 'Cabernet Sauvignon',
             'Nerello Mascalese', 'Malbec', 'Tempranillo Blend', 'Meritage', 'Red Blend', 'Merlot', 
@@ -81,7 +81,7 @@ def preprocess(df):
             'Cabernet Franc-Cabernet Sauvignon', 'Grenache-Syrah', 'Tempranillo-Cabernet Sauvignon', 'Merlot-Cabernet Franc', 
             'Syrah-Petite Sirah', 'Cabernet Blend', 'Maturana', 'Magliocco', 'Gamay Noir', 'Spätburgunder', 'Plavac Mali',
             'Lemberger', 'Saperavi', 'Dornfelder', 'Ojaleshi', 'Mondeuse', 'Perricone', 'Syrah-Merlot', 'Cabernet Sauvignon-Malbec',
-            'Tinto Fino', 'Malbec-Cabernet Sauvignon','Picpoul','Carignano', 'Cabernet Franc-Merlot', 
+            'Tinto Fino', 'Malbec-Cabernet Sauvignon','Carignano', 'Cabernet Franc-Merlot', 
             'Syrah-Petit Verdot', 'Syrah-Mourvèdre', 'Shiraz-Grenache', 'Grenache-Carignan', 'Malbec-Syrah', 
             'Cabernet Sauvignon-Tempranillo', 'Carignan', 'Cabernet-Syrah', 'Merlot-Cabernet Sauvignon', 
             'Mourvèdre-Syrah', 'Negrette', 'Tinta Barroca', 'Merlot-Tannat','Castelão', 
